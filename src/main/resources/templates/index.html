@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Scaffold 首页</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/css/layui.css">
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">Scaffold 脚手架</div>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item"><a href="javascript:;" id="usernameText"></a></li>
+            <li class="layui-nav-item"><a href="javascript:;" onclick="logout()">退出</a></li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <ul class="layui-nav layui-nav-tree">
+            <li class="layui-nav-item"><a href="/page/user">用户管理</a></li>
+            <li class="layui-nav-item"><a href="/page/article">文章管理</a></li>
+            <li class="layui-nav-item"><a href="/page/product">商品管理</a></li>
+        </ul>
+    </div>
+    <div class="layui-body" style="padding:15px;">
+        <iframe id="contentFrame" style="width:100%;height:100%;border:none;"></iframe>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
+<script>
+var token = localStorage.getItem('token');
+if (!token) { location.href = '/login'; }
+document.getElementById('usernameText').textContent = localStorage.getItem('username');
+
+document.querySelectorAll('.layui-nav-tree .layui-nav-item a').forEach(function(a) {
+    a.onclick = function() {
+        document.getElementById('contentFrame').src = this.getAttribute('href');
+        return false;
+    };
+});
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    location.href = '/login';
+}
+</script>
+</body>
+</html>
