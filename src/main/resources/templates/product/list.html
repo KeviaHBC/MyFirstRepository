@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>商品管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/css/layui.css">
+</head>
+<body style="padding:15px;">
+<script type="text/html" id="toolbar">
+    <button class="layui-btn layui-btn-sm" lay-event="add">新增商品</button>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+<div class="layui-form">
+    <div class="layui-form-item" style="display:inline-block;width:200px;">
+        <input type="text" id="searchName" placeholder="搜索商品名称" class="layui-input">
+    </div>
+    <button class="layui-btn" id="searchBtn">搜索</button>
+</div>
+
+<table id="productTable" lay-filter="productTable"></table>
+
+<script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
+<script>
+layui.use(['table', 'layer'], function() {
+    var table = layui.table, layer = layui.layer;
+    table.render({
+        elem: '#productTable',
+        url: '/api/product/page',
+        headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')},
+        toolbar: '#toolbar',
+        cols: [[
+            {field: 'id', title: 'ID', width: 80},
+            {field: 'name', title: '名称'},
+            {field: 'price', title: '价格', templet: function(d) { return '¥' + d.price; }},
+            {field: 'stock', title: '库存'},
+            {field: 'status', title: '状态', templet: function(d) { return d.status === 1 ? '上架' : '下架'; }},
+            {fixed: 'right', title: '操作', toolbar: '#bar', width: 150}
+        ]],
+        page: true
+    });
+
+    table.on('toolbar(productTable)', function(obj) {
+        if (obj.event === 'add') {
+            layer.open({
+                type: 1,
+                title: '新增商品',
+                area: ['500px', '450px'],
+                content: '<form class="layui-form" lay-filter="productForm" style="padding:20px;">'
+                    + '<div class="layui-form-item"><label class="layui-form-label">名称</label><div class="layui-input-block"><input type="text" name="name" lay-verify="required" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">描述</label><div class="layui-input-block"><input type="text" name="description" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">价格</label><div class="layui-input-block"><input type="number" name="price" step="0.01" lay-verify="required" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">库存</label><div class="layui-input-block"><input type="number" name="stock" lay-verify="required" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block"><input type="radio" name="status" value="1" title="上架" checked><input type="radio" name="status" value="0" title="下架"></div></div>'
+                    + '<div class="layui-form-item"><div class="layui-input-block"><button lay-submit lay-filter="saveProduct" class="layui-btn">保存</button></div></div>'
+                    + '</form>',
+                success: function() {
+                    layui.form.render();
+                    layui.form.on('submit(saveProduct)', function(data) {
+                        fetch('/api/product', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
+                            body: JSON.stringify(data.field)
+                        }).then(res => res.json()).then(res => {
+                            if (res.code === 200) { layer.closeAll(); table.reload('productTable'); layer.msg('新增成功'); }
+                            else { layer.msg(res.message); }
+                        });
+                        return false;
+                    });
+                }
+            });
+        }
+    });
+
+    table.on('tool(productTable)', function(obj) {
+        if (obj.event === 'del') {
+            layer.confirm('确认删除？', function() {
+                fetch('/api/product/' + obj.data.id, {
+                    method: 'DELETE',
+                    headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}
+                }).then(res => res.json()).then(res => {
+                    if (res.code === 200) { table.reload('productTable'); layer.msg('删除成功'); }
+                });
+            });
+        } else if (obj.event === 'edit') {
+            var d = obj.data;
+            layer.open({
+                type: 1,
+                title: '编辑商品',
+                area: ['500px', '450px'],
+                content: '<form class="layui-form" lay-filter="editProductForm" style="padding:20px;">'
+                    + '<input type="hidden" name="id" value="' + d.id + '">'
+                    + '<div class="layui-form-item"><label class="layui-form-label">名称</label><div class="layui-input-block"><input type="text" name="name" value="' + (d.name||'') + '" lay-verify="required" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">描述</label><div class="layui-input-block"><input type="text" name="description" value="' + (d.description||'') + '" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">价格</label><div class="layui-input-block"><input type="number" name="price" step="0.01" value="' + (d.price||'') + '" lay-verify="required" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">库存</label><div class="layui-input-block"><input type="number" name="stock" value="' + (d.stock||'') + '" lay-verify="required" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block"><input type="radio" name="status" value="1" title="上架" ' + (d.status===1?'checked':'') + '><input type="radio" name="status" value="0" title="下架" ' + (d.status===0?'checked':'') + '></div></div>'
+                    + '<div class="layui-form-item"><div class="layui-input-block"><button lay-submit lay-filter="updateProduct" class="layui-btn">保存</button></div></div>'
+                    + '</form>',
+                success: function() {
+                    layui.form.render();
+                    layui.form.on('submit(updateProduct)', function(data) {
+                        fetch('/api/product', {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
+                            body: JSON.stringify(data.field)
+                        }).then(res => res.json()).then(res => {
+                            if (res.code === 200) { layer.closeAll(); table.reload('productTable'); layer.msg('更新成功'); }
+                            else { layer.msg(res.message); }
+                        });
+                        return false;
+                    });
+                }
+            });
+        }
+    });
+
+    document.getElementById('searchBtn').onclick = function() {
+        table.reload('productTable', {where: {name: document.getElementById('searchName').value}});
+    };
+});
+</script>
+</body>
+</html>

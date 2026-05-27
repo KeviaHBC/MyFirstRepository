@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/css/layui.css">
+</head>
+<body style="padding:15px;">
+<script type="text/html" id="toolbar">
+    <button class="layui-btn layui-btn-sm" lay-event="add">新增用户</button>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+<div class="layui-form">
+    <div class="layui-form-item" style="display:inline-block;width:200px;">
+        <input type="text" id="searchUsername" placeholder="搜索用户名" class="layui-input">
+    </div>
+    <button class="layui-btn" id="searchBtn">搜索</button>
+</div>
+
+<table id="userTable" lay-filter="userTable"></table>
+
+<script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
+<script>
+layui.use(['table', 'layer'], function() {
+    var table = layui.table, layer = layui.layer;
+    table.render({
+        elem: '#userTable',
+        url: '/api/user/page',
+        headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')},
+        toolbar: '#toolbar',
+        cols: [[
+            {field: 'id', title: 'ID', width: 80},
+            {field: 'username', title: '用户名'},
+            {field: 'email', title: '邮箱'},
+            {field: 'phone', title: '手机号'},
+            {field: 'status', title: '状态', templet: function(d) { return d.status === 1 ? '正常' : '禁用'; }},
+            {fixed: 'right', title: '操作', toolbar: '#bar', width: 150}
+        ]],
+        page: true
+    });
+
+    table.on('toolbar(userTable)', function(obj) {
+        if (obj.event === 'add') {
+            layer.open({
+                type: 1,
+                title: '新增用户',
+                area: ['500px', '400px'],
+                content: '<form class="layui-form" lay-filter="userForm" style="padding:20px;">'
+                    + '<div class="layui-form-item"><label class="layui-form-label">用户名</label><div class="layui-input-block"><input type="text" name="username" lay-verify="required" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">邮箱</label><div class="layui-input-block"><input type="text" name="email" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">手机号</label><div class="layui-input-block"><input type="text" name="phone" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><div class="layui-input-block"><button lay-submit lay-filter="saveUser" class="layui-btn">保存</button></div></div>'
+                    + '</form>',
+                success: function() {
+                    layui.form.render();
+                    layui.form.on('submit(saveUser)', function(data) {
+                        fetch('/api/user', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
+                            body: JSON.stringify(data.field)
+                        }).then(res => res.json()).then(res => {
+                            if (res.code === 200) { layer.closeAll(); table.reload('userTable'); layer.msg('新增成功'); }
+                            else { layer.msg(res.message); }
+                        });
+                        return false;
+                    });
+                }
+            });
+        }
+    });
+
+    table.on('tool(userTable)', function(obj) {
+        if (obj.event === 'del') {
+            layer.confirm('确认删除？', function() {
+                fetch('/api/user/' + obj.data.id, {
+                    method: 'DELETE',
+                    headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}
+                }).then(res => res.json()).then(res => {
+                    if (res.code === 200) { table.reload('userTable'); layer.msg('删除成功'); }
+                });
+            });
+        } else if (obj.event === 'edit') {
+            var d = obj.data;
+            layer.open({
+                type: 1,
+                title: '编辑用户',
+                area: ['500px', '400px'],
+                content: '<form class="layui-form" lay-filter="editForm" style="padding:20px;">'
+                    + '<input type="hidden" name="id" value="' + d.id + '">'
+                    + '<div class="layui-form-item"><label class="layui-form-label">用户名</label><div class="layui-input-block"><input type="text" name="username" value="' + d.username + '" lay-verify="required" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">邮箱</label><div class="layui-input-block"><input type="text" name="email" value="' + (d.email||'') + '" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">手机号</label><div class="layui-input-block"><input type="text" name="phone" value="' + (d.phone||'') + '" class="layui-input"></div></div>'
+                    + '<div class="layui-form-item"><label class="layui-form-label">状态</label><div class="layui-input-block"><input type="radio" name="status" value="1" title="正常" ' + (d.status===1?'checked':'') + '><input type="radio" name="status" value="0" title="禁用" ' + (d.status===0?'checked':'') + '></div></div>'
+                    + '<div class="layui-form-item"><div class="layui-input-block"><button lay-submit lay-filter="updateUser" class="layui-btn">保存</button></div></div>'
+                    + '</form>',
+                success: function() {
+                    layui.form.render();
+                    layui.form.on('submit(updateUser)', function(data) {
+                        fetch('/api/user', {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token')},
+                            body: JSON.stringify(data.field)
+                        }).then(res => res.json()).then(res => {
+                            if (res.code === 200) { layer.closeAll(); table.reload('userTable'); layer.msg('更新成功'); }
+                            else { layer.msg(res.message); }
+                        });
+                        return false;
+                    });
+                }
+            });
+        }
+    });
+
+    document.getElementById('searchBtn').onclick = function() {
+        table.reload('userTable', {where: {username: document.getElementById('searchUsername').value}});
+    };
+});
+</script>
+</body>
+</html>
