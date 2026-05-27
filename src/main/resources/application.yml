@@ -18,8 +18,8 @@ spring:
       stat-view-servlet:
         enabled: true
         url-pattern: /druid/*
-        login-username: admin
-        login-password: admin123
+        login-username: ${DRUID_USER:admin}
+        login-password: ${DRUID_PASSWORD:admin123}
       filter:
         stat:
           enabled: true
@@ -34,7 +34,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: embedded
       schema-locations: classpath:db/schema.sql
       data-locations: classpath:db/data.sql
 
@@ -56,5 +56,5 @@ knife4j:
     language: zh_cn
 
 jwt:
-  secret: scaffold-jwt-secret-key-2026
+  secret: ${JWT_SECRET:scaffold-dev-secret}
   expiration: 604800000
