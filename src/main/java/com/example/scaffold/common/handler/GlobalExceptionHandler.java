@@ -2,11 +2,13 @@ package com.example.scaffold.common.handler;
 
 import com.example.scaffold.common.exception.BusinessException;
 import com.example.scaffold.common.result.R;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Hidden
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {

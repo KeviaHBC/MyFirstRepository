@@ -12,11 +12,14 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "用户认证")
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    @Operation(summary = "用户登录")
     @Log("用户登录")
     @PostMapping("/login")
     public R<Map<String, Object>> login(@Valid @RequestBody LoginRequest request) {
@@ -46,6 +50,7 @@ public class AuthController {
         return R.ok(result);
     }
 
+    @Operation(summary = "用户注册")
     @Log("用户注册")
     @PostMapping("/register")
     public R<Void> register(@Valid @RequestBody RegisterRequest request) {
