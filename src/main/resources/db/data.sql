@@ -1,7 +1,7 @@
 INSERT INTO t_user (username, password, email, phone, status) VALUES
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5Eh', 'admin@example.com', '13800000001', 1),
-('user1', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5Eh', 'user1@example.com', '13800000002', 1),
-('user2', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5Eh', 'user2@example.com', '13800000003', 0);
+('admin', '$2a$10$AmZ/1KpudYuXcVhypUlA6u9I9vM29xjDJmz3cZK9f9hI19e.6ENZ2', 'admin@example.com', '13800000001', 1),
+('user1', '$2a$10$AmZ/1KpudYuXcVhypUlA6u9I9vM29xjDJmz3cZK9f9hI19e.6ENZ2', 'user1@example.com', '13800000002', 1),
+('user2', '$2a$10$AmZ/1KpudYuXcVhypUlA6u9I9vM29xjDJmz3cZK9f9hI19e.6ENZ2', 'user2@example.com', '13800000003', 0);
 
 INSERT INTO t_article (title, content, category, status, author_id) VALUES
 ('Spring Boot 入门', 'Spring Boot 是由 Pivotal 团队提供的全新框架...', '技术', 1, 1),

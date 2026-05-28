@@ -24,7 +24,7 @@
 <table id="articleTable" lay-filter="articleTable"></table>
 
 <script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
-<script>
+<script th:inline="none">
 layui.use(['table', 'layer'], function() {
     var table = layui.table, layer = layui.layer;
     table.render({
@@ -39,7 +39,15 @@ layui.use(['table', 'layer'], function() {
             {field: 'status', title: '状态', width: 80, templet: function(d) { return d.status === 1 ? '发布' : '草稿'; }},
             {fixed: 'right', title: '操作', toolbar: '#bar', width: 150}
         ]],
-        page: true
+        page: true,
+        parseData: function(res) {
+            return {
+                code: res.code === 200 ? 0 : res.code,
+                msg: res.message,
+                count: res.data.total,
+                data: res.data.records
+            };
+        }
     });
 
     table.on('toolbar(articleTable)', function(obj) {

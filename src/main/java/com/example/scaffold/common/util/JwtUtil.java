@@ -5,6 +5,8 @@ import cn.hutool.jwt.JWTUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class JwtUtil {
 
@@ -18,7 +20,7 @@ public class JwtUtil {
         return JWT.create()
                 .setPayload("userId", userId)
                 .setPayload("username", username)
-                .setExpiresAt(System.currentTimeMillis() + expiration)
+                .setExpiresAt(new Date(System.currentTimeMillis() + expiration))
                 .setKey(secret.getBytes())
                 .sign();
     }

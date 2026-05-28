@@ -24,7 +24,7 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
-<script>
+<script th:inline="none">
 layui.use(['form', 'layer'], function() {
     var form = layui.form, layer = layui.layer;
     form.on('submit(login)', function(data) {
