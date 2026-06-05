@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <title>用户管理</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/css/layui.css">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
-<body style="padding:15px;">
+<body>
+<div class="page-container">
+    <div class="page-header">
+        <h2>用户管理</h2>
+        <p>管理系统用户信息</p>
+    </div>
 <script type="text/html" id="toolbar">
     <button class="layui-btn layui-btn-sm" lay-event="add">新增用户</button>
 </script>
@@ -14,14 +20,14 @@
     <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
 </script>
 
-<div class="layui-form">
-    <div class="layui-form-item" style="display:inline-block;width:200px;">
-        <input type="text" id="searchUsername" placeholder="搜索用户名" class="layui-input">
-    </div>
+<div class="search-card">
+    <input type="text" id="searchUsername" placeholder="搜索用户名" class="layui-input">
     <button class="layui-btn" id="searchBtn">搜索</button>
 </div>
 
-<table id="userTable" lay-filter="userTable"></table>
+<div class="table-card">
+    <table id="userTable" lay-filter="userTable"></table>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
 <script th:inline="none">
@@ -127,6 +133,22 @@ layui.use(['table', 'layer'], function() {
         table.reload('userTable', {where: {username: document.getElementById('searchUsername').value}});
     };
 });
+</script>
+</div>
+<script>
+(function() {
+    var THEME_KEY = 'scaffold-theme';
+    // 从 localStorage 读取主题
+    var theme = localStorage.getItem(THEME_KEY) || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    // 监听父窗口主题切换
+    window.addEventListener('message', function(e) {
+        if (e.data && e.data.type === 'theme-change') {
+            document.documentElement.setAttribute('data-theme', e.data.theme);
+            localStorage.setItem(THEME_KEY, e.data.theme);
+        }
+    });
+})();
 </script>
 </body>
 </html>

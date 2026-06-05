@@ -1,27 +1,29 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登录 - Scaffold</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/css/layui.css">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
-<body style="background: #f0f2f5;">
-<div style="display:flex;justify-content:center;align-items:center;min-height:100vh;">
-    <div style="width:400px;padding:40px;background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.1);">
-        <h2 style="text-align:center;margin-bottom:30px;">Scaffold 脚手架</h2>
-        <form class="layui-form" id="loginForm">
-            <div class="layui-form-item">
-                <input type="text" name="username" lay-verify="required" placeholder="用户名" class="layui-input">
-            </div>
-            <div class="layui-form-item">
-                <input type="password" name="password" lay-verify="required" placeholder="密码" class="layui-input">
-            </div>
-            <div class="layui-form-item">
-                <button lay-submit lay-filter="login" class="layui-btn layui-btn-fluid">登 录</button>
-            </div>
-        </form>
+<body class="login-page">
+<div class="login-card">
+    <div class="login-brand">
+        <h1>Scaffold</h1>
+        <span>Enterprise Management Console</span>
     </div>
+    <form class="layui-form" id="loginForm">
+        <div class="layui-form-item">
+            <input type="text" name="username" lay-verify="required" placeholder="用户名" class="layui-input">
+        </div>
+        <div class="layui-form-item">
+            <input type="password" name="password" lay-verify="required" placeholder="密码" class="layui-input">
+        </div>
+        <div class="layui-form-item">
+            <button lay-submit lay-filter="login" class="layui-btn layui-btn-fluid">登 录</button>
+        </div>
+    </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
 <script th:inline="none">
@@ -44,6 +46,12 @@ layui.use(['form', 'layer'], function() {
         return false;
     });
 });
+</script>
+<script>
+(function() {
+    var theme = localStorage.getItem('scaffold-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+})();
 </script>
 </body>
 </html>

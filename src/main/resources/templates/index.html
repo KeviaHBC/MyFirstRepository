@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <title>Scaffold 首页</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/css/layui.css">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
         <div class="layui-logo">Scaffold 脚手架</div>
-        <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item"><a href="javascript:;" id="usernameText"></a></li>
-            <li class="layui-nav-item"><a href="javascript:;" onclick="logout()">退出</a></li>
-        </ul>
+        <div class="header-right">
+            <button class="theme-toggle" id="themeToggle" title="切换亮/暗主题">◐</button>
+            <ul class="layui-nav">
+                <li class="layui-nav-item"><a href="javascript:;" id="usernameText"></a></li>
+                <li class="layui-nav-item"><a href="javascript:;" onclick="logout()">退出</a></li>
+            </ul>
+        </div>
     </div>
     <div class="layui-side layui-bg-black">
         <ul class="layui-nav layui-nav-tree">
@@ -21,16 +25,55 @@
             <li class="layui-nav-item"><a href="/page/product">商品管理</a></li>
         </ul>
     </div>
-    <div class="layui-body" style="padding:15px;">
+    <div class="layui-body">
         <iframe id="contentFrame" style="width:100%;height:100%;border:none;"></iframe>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
 <script th:inline="none">
+// ── 认证 ────────────────────────────────────────────────
 var token = localStorage.getItem('token');
 if (!token) { location.href = '/login'; }
 document.getElementById('usernameText').textContent = localStorage.getItem('username');
 
+// ── 主题管理 ────────────────────────────────────────────
+var THEME_KEY = 'scaffold-theme';
+
+function getTheme() {
+    return localStorage.getItem(THEME_KEY) || 'dark';
+}
+
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+    var btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = theme === 'light' ? '◑' : '◐';
+    // 同步到 iframe 子页面
+    var iframe = document.getElementById('contentFrame');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'theme-change', theme: theme }, '*');
+    }
+}
+
+// 初始化主题
+setTheme(getTheme());
+
+// 监听 iframe 就绪后同步主题
+var contentFrame = document.getElementById('contentFrame');
+contentFrame.addEventListener('load', function() {
+    var theme = getTheme();
+    if (contentFrame.contentWindow) {
+        contentFrame.contentWindow.postMessage({ type: 'theme-change', theme: theme }, '*');
+    }
+});
+
+// 主题切换按钮
+document.getElementById('themeToggle').addEventListener('click', function() {
+    var next = getTheme() === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+});
+
+// ── 侧边栏导航 ──────────────────────────────────────────
 document.querySelectorAll('.layui-nav-tree .layui-nav-item a').forEach(function(a) {
     a.onclick = function() {
         document.getElementById('contentFrame').src = this.getAttribute('href');
@@ -38,6 +81,7 @@ document.querySelectorAll('.layui-nav-tree .layui-nav-item a').forEach(function(
     };
 });
 
+// ── 退出 ────────────────────────────────────────────────
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
