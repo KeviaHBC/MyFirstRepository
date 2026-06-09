@@ -465,7 +465,10 @@ body {
   background: var(--bg-primary);
   top: 60px;
 }
-.layui-layout-admin .layui-body iframe { background: var(--bg-primary); }
+.layui-layout-admin .layui-body iframe {
+  background: var(--bg-primary);
+  transition: opacity 0.15s ease;
+}
 .layui-layout-admin .layui-header .layui-nav {
   background: transparent;
   height: 60px;

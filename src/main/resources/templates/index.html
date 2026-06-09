@@ -85,11 +85,16 @@ document.getElementById('themeToggle').addEventListener('click', function() {
 });
 
 // ── 侧边栏导航 ──────────────────────────────────────────
+var contentFrame = document.getElementById('contentFrame');
 document.querySelectorAll('.layui-nav-tree .layui-nav-item a').forEach(function(a) {
     a.onclick = function() {
-        document.getElementById('contentFrame').src = this.getAttribute('href');
+        contentFrame.style.opacity = '0';
+        contentFrame.src = this.getAttribute('href');
         return false;
     };
+});
+contentFrame.addEventListener('load', function() {
+    contentFrame.style.opacity = '1';
 });
 
 // ── 退出 ────────────────────────────────────────────────
