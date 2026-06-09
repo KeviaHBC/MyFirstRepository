@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.stream.Collectors;
+
 @Hidden
 @Slf4j
 @RestControllerAdvice
@@ -30,8 +32,8 @@ public class GlobalExceptionHandler {
     public R<Void> handleValidException(MethodArgumentNotValidException e) {
         String msg = e.getBindingResult().getFieldErrors().stream()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .reduce((a, b) -> a + "; " + b)
-                .orElse("参数校验失败");
+                .collect(Collectors.joining("; "));
+        if (msg.isEmpty()) msg = "参数校验失败";
         return R.fail(400, msg);
     }
 
