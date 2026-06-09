@@ -33,8 +33,19 @@
 <script th:inline="none">
 // ── 认证 ────────────────────────────────────────────────
 var token = localStorage.getItem('token');
-if (!token) { location.href = '/login'; }
-document.getElementById('usernameText').textContent = localStorage.getItem('username');
+if (!token) {
+    layui.use('layer', function() {
+        layer.open({
+            title: '提示',
+            content: '您还未登录，请先登录',
+            btn: ['去登录'],
+            yes: function() { location.href = '/login'; },
+            closeBtn: false
+        });
+    });
+} else {
+    document.getElementById('usernameText').textContent = localStorage.getItem('username');
+}
 
 // ── 主题管理 ────────────────────────────────────────────
 var THEME_KEY = 'scaffold-theme';

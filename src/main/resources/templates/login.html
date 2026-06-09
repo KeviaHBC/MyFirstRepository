@@ -9,6 +9,7 @@
 </head>
 <body class="login-page">
 <div class="login-card">
+    <button class="theme-toggle login-theme-toggle" id="themeToggle" title="切换亮/暗主题">◐</button>
     <div class="login-brand">
         <h1>Scaffold</h1>
         <span>Enterprise Management Console</span>
@@ -49,8 +50,18 @@ layui.use(['form', 'layer'], function() {
 </script>
 <script>
 (function() {
-    var theme = localStorage.getItem('scaffold-theme') || 'dark';
+    var THEME_KEY = 'scaffold-theme';
+    var theme = localStorage.getItem(THEME_KEY) || 'dark';
     document.documentElement.setAttribute('data-theme', theme);
+    var btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = theme === 'light' ? '◑' : '◐';
+
+    btn.addEventListener('click', function() {
+        theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem(THEME_KEY, theme);
+        btn.textContent = theme === 'light' ? '◑' : '◐';
+    });
 })();
 </script>
 </body>

@@ -120,6 +120,12 @@
 .theme-toggle:active {
   transform: rotate(15deg) scale(0.9);
 }
+.login-theme-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  margin: 0;
+}
 
 /* ── 全局重置 ─────────────────────────────────────────────── */
 * { box-sizing: border-box; }
