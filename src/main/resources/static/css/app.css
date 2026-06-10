@@ -597,3 +597,379 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px var(--accent-glow);
 }
+
+/* ============================================================
+   AI Chat — 聊天面板样式
+   ============================================================ */
+
+/* ── 悬浮按钮 ──────────────────────────────────────────── */
+.ai-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: var(--bg-deep);
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  z-index: 998;
+  box-shadow: 0 4px 20px var(--accent-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+.ai-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px var(--accent-glow);
+}
+.ai-fab:active {
+  transform: scale(0.95);
+}
+
+/* ── 遮罩 ───────────────────────────────────────────────── */
+.chat-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.chat-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── 抽屉面板 ───────────────────────────────────────────── */
+.chat-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.chat-drawer.active {
+  transform: translateX(0);
+}
+
+.chat-header {
+  background: var(--bg-deep);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.chat-title {
+  color: var(--accent-light);
+  font-weight: 700;
+  font-size: 15px;
+  font-family: var(--font-body);
+}
+.chat-context {
+  color: var(--text-muted);
+  font-size: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2px 10px;
+}
+.chat-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition);
+}
+.chat-close:hover {
+  color: var(--text-primary);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.msg-user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: var(--bg-deep);
+  padding: 8px 14px;
+  border-radius: 14px 14px 2px 14px;
+  max-width: 85%;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.msg-ai {
+  align-self: flex-start;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  border-radius: 14px 14px 14px 2px;
+  max-width: 90%;
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+/* ── 异常卡片 ───────────────────────────────────────────── */
+.anomaly-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 6px;
+}
+.anomaly-card.severity-warning {
+  border-left-color: var(--warning);
+}
+.anomaly-card.severity-info {
+  border-left-color: var(--teal);
+}
+.anomaly-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.severity-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.severity-badge.severity-严重 {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+}
+.severity-badge.severity-警告 {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+}
+.severity-badge.severity-提示 {
+  background: rgba(45, 212, 191, 0.15);
+  color: var(--teal);
+}
+.anomaly-type {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+.anomaly-card-body {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+.anomaly-card-actions {
+  display: flex;
+  gap: 6px;
+}
+.anomaly-card-actions button {
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+}
+.anomaly-card-actions .btn-detail {
+  background: var(--accent);
+  color: var(--bg-deep);
+}
+.anomaly-card-actions .btn-detail:hover {
+  background: var(--accent-light);
+}
+.anomaly-card-actions .btn-dismiss {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+}
+.anomaly-card-actions .btn-dismiss:hover {
+  background: var(--bg-hover);
+}
+
+.chart-placeholder {
+  background: var(--bg-card);
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* ── 快捷问题 + 输入区 ─────────────────────────────────── */
+.quick-chips {
+  padding: 8px 12px;
+  border-top: 1px solid var(--bg-hover);
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.quick-chips .chip {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: none;
+  font-family: var(--font-body);
+}
+.quick-chips .chip:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  color: var(--accent-light);
+}
+
+.chat-input-area {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.chat-input-area input {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+}
+.chat-input-area input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.chat-input-area input::placeholder {
+  color: var(--text-muted);
+}
+.chat-input-area button {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: var(--bg-deep);
+  font-weight: 600;
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+.chat-input-area button:hover {
+  background: var(--accent-light);
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+/* ── 详情弹窗 ───────────────────────────────────────────── */
+.anomaly-detail {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1001;
+  max-width: 500px;
+  width: 90%;
+  display: none;
+}
+.anomaly-detail.active {
+  display: block;
+  animation: scaleIn 0.2s ease;
+}
+.anomaly-detail .detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.anomaly-detail .detail-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: var(--font-body);
+}
+.anomaly-detail .detail-header button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.anomaly-detail .detail-header button:hover {
+  color: var(--text-primary);
+}
+.anomaly-detail .detail-body {
+  padding: 16px 18px;
+}
+.anomaly-detail .detail-row {
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.anomaly-detail .detail-label {
+  color: var(--text-muted);
+  width: 80px;
+  flex-shrink: 0;
+}
+.anomaly-detail .detail-value {
+  color: var(--text-primary);
+  word-break: break-word;
+}
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: none;
+}
+.detail-overlay.active {
+  display: block;
+}

@@ -30,6 +30,7 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/layui@2.9.8/dist/layui.js"></script>
+<script src="/js/chat.js"></script>
 <script th:inline="none">
 // ── 认证 ────────────────────────────────────────────────
 var token = localStorage.getItem('token');
@@ -104,5 +105,41 @@ function logout() {
     location.href = '/login';
 }
 </script>
+<!-- ════════════════════════════════════════════════════════
+     AI Chat — 聊天助手面板
+     ════════════════════════════════════════════════════════ -->
+
+<button id="aiFab" class="ai-fab" title="AI 助手">
+  <span class="ai-fab-icon">AI</span>
+</button>
+
+<div id="chatOverlay" class="chat-overlay"></div>
+
+<div id="chatDrawer" class="chat-drawer">
+  <div class="chat-header">
+    <span class="chat-title">🤖 AI 助手</span>
+    <span id="chatContext" class="chat-context">系统</span>
+    <button id="chatClose" class="chat-close">✕</button>
+  </div>
+  <div id="chatMessages" class="chat-messages"></div>
+  <div id="quickChips" class="quick-chips">
+    <span class="chip" data-prompt="数据概览">📊 数据概览</span>
+    <span class="chip" data-prompt="异常详情">🔍 异常详情</span>
+    <span class="chip" data-prompt="趋势分析">📈 趋势分析</span>
+  </div>
+  <div class="chat-input-area">
+    <input type="text" id="chatInput" placeholder="输入你的问题...">
+    <button id="chatSend">发送</button>
+  </div>
+</div>
+
+<div id="anomalyDetail" class="anomaly-detail">
+  <div class="detail-header">
+    <h3 id="detailTitle"></h3>
+    <button onclick="ChatManager.closeDetail()">✕</button>
+  </div>
+  <div id="detailBody" class="detail-body"></div>
+</div>
+
 </body>
 </html>
