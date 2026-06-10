@@ -38,7 +38,11 @@ public class JwtUtil {
 
     public boolean verify(String token) {
         try {
-            return JWTUtil.verify(token, secretBytes);
+            JWT jwt = JWTUtil.parseToken(token);
+            if (!jwt.setKey(secretBytes).verify()) {
+                return false;
+            }
+            return !jwt.getPayloads().getDate("exp").before(new Date());
         } catch (Exception e) {
             return false;
         }
